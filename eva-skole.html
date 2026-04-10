@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Evas dag">
+<title>Evas dag 🌸</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: linear-gradient(160deg, #fff0f8 0%, #f5f0ff 100%);
+    min-height: 100vh;
+    padding: 16px 12px 40px;
+    color: #2a1a3e;
+  }
+
+  .app { max-width: 600px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { text-align: center; padding: 20px 0 16px; }
+  .header-star {
+    font-size: 80px;
+    line-height: 1;
+    margin-bottom: 8px;
+    display: block;
+    animation: spin 3s ease-in-out infinite;
+  }
+  @keyframes spin {
+    0%, 100% { transform: rotate(-8deg) scale(1); }
+    50% { transform: rotate(8deg) scale(1.08); }
+  }
+  .header-name {
+    font-size: 42px;
+    font-weight: 900;
+    color: #d63384;
+    letter-spacing: -0.5px;
+  }
+  .header-date { font-size: 18px; color: #999; margin-top: 4px; font-weight: 700; }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: 28px;
+    padding: 22px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(214,51,132,0.08);
+  }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .card-icon { font-size: 32px; }
+  .card-title { font-size: 22px; font-weight: 900; color: #2a1a3e; }
+
+  /* WEATHER */
+  .weather-card { background: linear-gradient(135deg, #f093fb, #c653c6); color: white; }
+  .weather-card .card-title { color: white; }
+  .weather-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .weather-temp { font-size: 72px; font-weight: 900; line-height: 1; color: white; }
+  .weather-big-icon { font-size: 80px; }
+  .weather-desc { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 8px; }
+  .tip-box {
+    background: rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 12px 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.4;
+  }
+
+  /* TODAY */
+  .today-card { background: linear-gradient(135deg, #f953c6, #b91d73); }
+  .today-card .card-title { color: white; }
+  .today-big {
+    font-size: 21px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.4;
+    background: rgba(255,255,255,0.2);
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .today-time {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 700;
+    padding: 0 4px;
+  }
+  .swim-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    color: white;
+    font-size: 14px;
+    font-weight: 900;
+    border-radius: 10px;
+    padding: 3px 10px;
+    margin-bottom: 8px;
+  }
+  .remind-box {
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  /* WEEK PLAN */
+  .week-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .week-tab {
+    font-size: 15px;
+    font-weight: 900;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 2.5px solid #f0c0d8;
+    background: white;
+    color: #c653c6;
+    cursor: pointer;
+  }
+  .week-tab.active { background: #d63384; color: white; border-color: #d63384; }
+  .week-day {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 2px dashed #fce4f0;
+  }
+  .week-day:last-child { border-bottom: none; }
+  .week-day.today-row {
+    background: #fff0f8;
+    border-radius: 16px;
+    padding: 11px 14px;
+    margin: 0 -4px;
+    border-bottom: none;
+  }
+  .week-day-name { font-size: 15px; font-weight: 900; color: #d63384; min-width: 52px; padding-top: 2px; flex-shrink: 0; }
+  .week-day-content { flex: 1; }
+  .week-day-text { font-size: 16px; font-weight: 700; color: #333; line-height: 1.4; }
+  .week-time { font-size: 12px; color: #bbb; font-weight: 700; margin-top: 2px; }
+  .week-remind { font-size: 13px; color: #c653c6; font-weight: 700; margin-top: 3px; }
+  .badge-swim {
+    display: inline-block;
+    background: #d4f5e9;
+    color: #1a7a52;
+    font-size: 12px;
+    font-weight: 900;
+    border-radius: 8px;
+    padding: 2px 8px;
+    margin-bottom: 4px;
+  }
+  .badge-closed {
+    display: inline-block;
+    background: #ffe0e0;
+    color: #c0392b;
+    font-size: 12px;
+    font-weight: 900;
+    border-radius: 8px;
+    padding: 2px 8px;
+    margin-bottom: 4px;
+  }
+
+  /* HOMEWORK */
+  .hw-card { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+  .hw-card .card-title { color: white; }
+  .hw-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .hw-item:last-child { margin-bottom: 0; }
+  .hw-icon { font-size: 28px; flex-shrink: 0; }
+  .hw-text { font-size: 18px; font-weight: 700; color: white; line-height: 1.4; }
+  .hw-deadline {
+    background: rgba(255,255,255,0.3);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  /* TOPICS */
+  .topics-card { }
+  .topic-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .topic-item:last-child { margin-bottom: 0; }
+  .topic-pink { background: #fff0f8; color: #c0006a; }
+  .topic-purple { background: #f5f0ff; color: #6a1ab1; }
+  .topic-green { background: #f0fff5; color: #1a7a52; }
+  .topic-icon { font-size: 28px; }
+
+  /* FUN FACT */
+  .fact-card { background: linear-gradient(135deg, #f77062, #fe5196); }
+  .fact-card .card-title { color: white; }
+  .fact-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 18px;
+    padding: 16px;
+    margin-top: 4px;
+  }
+  .fact-emoji { font-size: 56px; flex-shrink: 0; }
+  .fact-text { font-size: 19px; font-weight: 700; color: white; line-height: 1.4; }
+
+  /* WORD */
+  .word-big { font-size: 40px; font-weight: 900; color: #d63384; text-align: center; padding: 12px 0 6px; }
+  .word-meaning { font-size: 20px; font-weight: 700; color: #555; text-align: center; line-height: 1.4; padding: 0 8px; }
+
+  /* CHALLENGE */
+  .challenge-card { background: linear-gradient(135deg, #fccb90, #d57eeb); }
+  .challenge-card .card-title { color: white; }
+  .challenge-inner { text-align: center; padding: 8px 0; }
+  .challenge-emoji { font-size: 70px; display: block; margin-bottom: 8px; }
+  .challenge-text { font-size: 22px; font-weight: 900; color: white; line-height: 1.4; }
+
+  /* BUTTONS */
+  .big-btn {
+    display: block;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 14px;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    margin-top: 12px;
+    color: white;
+    background: rgba(255,255,255,0.3);
+    transition: transform 0.1s;
+  }
+  .big-btn:active { transform: scale(0.96); }
+  .btn-pink { background: #fff0f8; color: #d63384; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 16px 0 8px; font-size: 14px; color: #ddd; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <span class="header-star">🌸</span>
+    <div class="header-name" id="greeting">Hei, Eva!</div>
+    <div class="header-date" id="dateStr">Laster...</div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="card weather-card">
+    <div class="card-header">
+      <div class="card-icon">🌤️</div>
+      <div class="card-title">Hvordan er det ute?</div>
+    </div>
+    <div class="weather-main">
+      <div>
+        <div class="weather-temp" id="tempVal">—°</div>
+        <div class="weather-desc" id="weatherDesc">Henter vær...</div>
+      </div>
+      <div class="weather-big-icon" id="weatherIcon">⏳</div>
+    </div>
+    <div class="tip-box" id="clothingTip">🔄 Henter klesråd...</div>
+  </div>
+
+  <!-- TODAY AT SCHOOL -->
+  <div class="card today-card" id="todayCard">
+    <div class="card-header">
+      <div class="card-icon">🎒</div>
+      <div class="card-title" style="color:white;">I dag på skolen</div>
+    </div>
+    <div id="todayContent">
+      <div class="today-big">🔄 Laster...</div>
+    </div>
+  </div>
+
+  <!-- WEEK PLAN -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🗓️</div>
+      <div class="card-title">Hele uken – uke 16</div>
+    </div>
+    <div id="weekPlan"></div>
+  </div>
+
+  <!-- WHAT WE LEARN -->
+  <div class="card topics-card">
+    <div class="card-header">
+      <div class="card-icon">✏️</div>
+      <div class="card-title">Vi lærer denne uken</div>
+    </div>
+    <div class="topic-item topic-pink"><span class="topic-icon">👂</span> PALS: Lytte og gi rom for andre</div>
+    <div class="topic-item topic-purple"><span class="topic-icon">🧮</span> Matte: Kvarter, halvtime og time</div>
+    <div class="topic-item topic-green"><span class="topic-icon">🌸</span> Tema: Vi utforsker våren!</div>
+  </div>
+
+  <!-- HOMEWORK -->
+  <div class="card hw-card">
+    <div class="card-header">
+      <div class="card-icon">📚</div>
+      <div class="card-title">Ukelekse</div>
+    </div>
+    <div class="hw-item"><div class="hw-icon">📖</div><div class="hw-text">Les 10 minutter i egen bok</div></div>
+    <div class="hw-item"><div class="hw-icon">🧩</div><div class="hw-text">Gjør "gåter"-arket</div></div>
+    <div class="hw-item"><div class="hw-icon">🔢</div><div class="hw-text">Side 65 i Matemagisk oppgavebok</div></div>
+    <div class="hw-deadline">⏰ Leveres fredag 17. april!</div>
+  </div>
+
+  <!-- FUN FACT -->
+  <div class="card fact-card">
+    <div class="card-header">
+      <div class="card-icon">🤩</div>
+      <div class="card-title" style="color:white;">Visste du det?</div>
+    </div>
+    <div class="fact-content">
+      <div class="fact-emoji" id="factEmoji">🦋</div>
+      <div class="fact-text" id="factText">Laster...</div>
+    </div>
+    <button class="big-btn" onclick="nextFact()">Neste fakta! ✨</button>
+  </div>
+
+  <!-- WORD OF THE DAY -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔤</div>
+      <div class="card-title">Dagens ord</div>
+    </div>
+    <div class="word-big" id="wordBig">...</div>
+    <div class="word-meaning" id="wordMeaning">...</div>
+    <button class="big-btn btn-pink" onclick="nextWord()">Nytt ord! 🔤</button>
+  </div>
+
+  <!-- CHALLENGE -->
+  <div class="card challenge-card">
+    <div class="card-header">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Dagens utfordring</div>
+    </div>
+    <div class="challenge-inner">
+      <span class="challenge-emoji" id="chalEmoji">🎨</span>
+      <div class="challenge-text" id="chalText">Laster...</div>
+    </div>
+    <button class="big-btn" onclick="nextChallenge()">Ny utfordring! 🎲</button>
+  </div>
+
+  <div class="footer">Laget med ❤️ for Eva 🌸</div>
+</div>
+
+<script>
+// DATE & GREETING
+const today = new Date();
+const dayNo = ['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
+const monthNo = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
+const h = today.getHours();
+const greet = h < 10 ? 'God morgen, Eva! ☀️' : h < 12 ? 'Hei, Eva! 🌸' : h < 17 ? 'Hei, Eva! 🌞' : 'God kveld, Eva! 🌙';
+document.getElementById('greeting').textContent = greet;
+document.getElementById('dateStr').textContent = dayNo[today.getDay()] + ' ' + today.getDate() + '. ' + monthNo[today.getMonth()];
+
+// WEATHER
+async function fetchWeather() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.9&longitude=10.63&current=temperature_2m,apparent_temperature,wind_speed_10m,weather_code&timezone=Europe%2FOslo', {signal: controller.signal});
+    clearTimeout(timeout);
+    const d = await r.json();
+    const c = d.current;
+    document.getElementById('tempVal').textContent = Math.round(c.temperature_2m) + '°';
+    const wc = c.weather_code;
+    let icon='☀️', desc='Kjempefint vær!';
+    if(wc===0){icon='☀️';desc='Strålende sol ute!';}
+    else if(wc<=2){icon='🌤️';desc='Litt skyer, men fint!';}
+    else if(wc<=3){icon='☁️';desc='Ganske overskyet.';}
+    else if(wc<=48){icon='🌫️';desc='Tåkete ute.';}
+    else if(wc<=57){icon='🌦️';desc='Litt yr og duskregn.';}
+    else if(wc<=67){icon='🌧️';desc='Det regner ute!';}
+    else if(wc<=77){icon='❄️';desc='Det snør!';}
+    else if(wc<=82){icon='🌦️';desc='Regnbyger.';}
+    else{icon='⛈️';desc='Tordenvær!';}
+    document.getElementById('weatherDesc').textContent = desc;
+    document.getElementById('weatherIcon').textContent = icon;
+    const temp = c.temperature_2m;
+    let tip='';
+    if(wc>=51) tip='☂️ Husk regnjakke og gummistøvler!';
+    else if(wc>=77) tip='❄️ Det snør! Ta på lue, votter og varm jakke!';
+    else if(temp<0) tip='🥶 Brrr – veldig kaldt! Ullundertøy, lue og votter!';
+    else if(temp<8) tip='🧤 Kaldt! Husk varm jakke og lue.';
+    else if(temp<14) tip='🧥 Ha med en mellomjakke – kan bli friskt.';
+    else tip='😎 Så fint! En tynn jakke holder!';
+    document.getElementById('clothingTip').textContent = tip;
+  } catch(e) {
+    document.getElementById('tempVal').textContent = '?°';
+    document.getElementById('weatherDesc').textContent = 'Sjekk yr.no!';
+    document.getElementById('weatherIcon').textContent = '🌡️';
+    document.getElementById('clothingTip').textContent = '📱 Sjekk yr.no for vær i dag!';
+  }
+}
+fetchWeather();
+
+// SKOLE UKE 16
+const skole = [
+  {
+    day:'Man 13', text:'Lekestart · Bibliotek · Tema – vår 🌸',
+    tid:'08:30–13:00',
+    remind:'Pakk svømmetøy til tirsdag! Badehette (med navn), svømmeklær, håndkle og såpe.'
+  },
+  {
+    day:'Tir 14', text:'Svømming! Gruppe 1: buss 09:45 · Gruppe 2: buss 10:15',
+    tid:'08:30–13:00', swim:true
+  },
+  {
+    day:'Ons 15', text:'Lekestart · Engelsk: In the kitchen 🍳',
+    tid:'08:30–13:00',
+    remind:'Pakk svømmetøy til torsdag!'
+  },
+  {
+    day:'Tor 16', text:'Svømming! Gruppe 1: buss 09:45 · Gruppe 2: buss 10:15',
+    tid:'08:30–13:30', swim:true
+  },
+  {
+    day:'Fre 17', text:'Lekestart · Tema – vår 🌸',
+    tid:'08:30–13:00',
+    remind:'⚠️ Lever ukeleksen i dag! Siste frist.'
+  },
+];
+
+// Render week plan
+const td = today.getDate();
+document.getElementById('weekPlan').innerHTML = skole.map(row => {
+  const isToday = row.day.includes(' ' + td);
+  return `<div class="week-day ${isToday ? 'today-row' : ''}">
+    <div class="week-day-name">${row.day.split(' ')[0]}</div>
+    <div class="week-day-content">
+      ${row.swim ? '<div class="badge-swim">🏊 Svømming</div>' : ''}
+      <div class="week-day-text">${row.text}</div>
+      <div class="week-time">Skoletid: ${row.tid}</div>
+      ${row.remind ? `<div class="week-remind">📌 ${row.remind}</div>` : ''}
+    </div>
+  </div>`;
+}).join('');
+
+// Render today
+function renderToday() {
+  const todayRow = skole.find(r => r.day.includes(' ' + td));
+  const el = document.getElementById('todayContent');
+  if (!todayRow) {
+    el.innerHTML = `<div class="today-big">Se ukeplanen under! 👇</div><div class="today-time">Ha en fin dag! 🌸</div>`;
+    return;
+  }
+  el.innerHTML = `
+    ${todayRow.swim ? '<div class="swim-badge">🏊 Svømmedag!</div>' : ''}
+    <div class="today-big">${todayRow.text}</div>
+    <div class="today-time">Skoletid: ${todayRow.tid}</div>
+    ${todayRow.remind ? `<div class="remind-box">📌 ${todayRow.remind}</div>` : ''}
+  `;
+}
+renderToday();
+
+// FUN FACTS
+const facts = [
+  {e:'🦋', t:'En sommerfugl smaker med føttene sine – som å spise med sokkene!'},
+  {e:'🐬', t:'Delfiner sover med ett øye åpent hele natten!'},
+  {e:'🌸', t:'En kirseblomst blomstrer bare i én uke hvert år i Japan.'},
+  {e:'🦄', t:'Enhornfisken finnes på ekte – den heter narhval og lever i Arktis!'},
+  {e:'🐝', t:'En bie må besøke 1500 blomster for å lage én teskje honning!'},
+  {e:'⭐', t:'Det er flere stjerner i verdensrommet enn sandkorn på alle strender i verden!'},
+  {e:'🐙', t:'En blekksprut har tre hjerter og blått blod!'},
+  {e:'🌈', t:'Et regnbue er egentlig en full sirkel – vi ser bare halvparten fra bakken!'},
+  {e:'🦩', t:'Flamingoen er grå når den er baby – den blir rosa av maten den spiser!'},
+  {e:'🐘', t:'Elefanter husker venner de ikke har sett på 20 år!'},
+];
+let fIdx = Math.floor(Math.random() * facts.length);
+function showFact() {
+  document.getElementById('factEmoji').textContent = facts[fIdx].e;
+  document.getElementById('factText').textContent = facts[fIdx].t;
+}
+function nextFact() { fIdx = (fIdx + 1) % facts.length; showFact(); }
+showFact();
+
+// WORD OF THE DAY
+const words = [
+  {w:'Eventyr', m:'En magisk og spennende fortelling!'},
+  {w:'Modig', m:'Å gjøre noe selv om man er litt redd.'},
+  {w:'Nysgjerrig', m:'Å ville lære og finne ut ting!'},
+  {w:'Fantastisk', m:'Noe som er veldig, veldig bra!'},
+  {w:'Observere', m:'Å se nøye etter – som en detektiv!'},
+  {w:'Vennskap', m:'Å ha en god venn som du er glad i.'},
+  {w:'Oppdagelse', m:'Å finne noe nytt ingen har sett før.'},
+  {w:'Blomstrende', m:'Noe som vokser, utvikler seg og blir flottere!'},
+];
+let wIdx = today.getDay();
+function showWord() {
+  document.getElementById('wordBig').textContent = words[wIdx % words.length].w;
+  document.getElementById('wordMeaning').textContent = words[wIdx % words.length].m;
+}
+function nextWord() { wIdx = (wIdx + 1) % words.length; showWord(); }
+showWord();
+
+// CHALLENGE
+const challenges = [
+  {e:'🎨', t:'Tegn en blomst med så mange farger du kan!'},
+  {e:'📖', t:'Les høyt for noen hjemme i dag!'},
+  {e:'🌿', t:'Finn 3 tegn på at våren har kommet!'},
+  {e:'🤸', t:'Gjør 10 stjernehoppet!'},
+  {e:'🌟', t:'Si tre hyggelige ting til tre ulike personer!'},
+  {e:'🎵', t:'Finn på en sang om våren og fremfør den!'},
+  {e:'✍️', t:'Skriv et lite dikt om din favorittting!'},
+  {e:'🤗', t:'Gi noen en overraskelsesklem i dag!'},
+];
+let cIdx = (today.getDay() + 3) % challenges.length;
+function showChallenge() {
+  document.getElementById('chalEmoji').textContent = challenges[cIdx].e;
+  document.getElementById('chalText').textContent = challenges[cIdx].t;
+}
+function nextChallenge() { cIdx = (cIdx + 1) % challenges.length; showChallenge(); }
+showChallenge();
+</script>
+</body>
+</html>
